@@ -10,7 +10,7 @@ import android.app.FragmentTransaction;
 import android.view.Menu;
 
 
-@SuppressLint("NewApi")
+
 public class MainActivity extends Activity {
 
 	@Override
@@ -24,19 +24,38 @@ public class MainActivity extends Activity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setTitle("CapaTwitter");
 		actionBar.setSubtitle("Proyecto: Android");
-		// Navegacion con pestñas
+		// Navegacion con pestanas
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		// Creo la pestaña de tweets
 		
-		Tab pestanaTweets = actionBar.newTab();
-		pestanaTweets.setText("Tweets")
-					.setIcon(R.drawable.ic_launcher)
-					.setContentDescription("Tweets") 
-					.setTabListener(
-					 new TabListener<MyFragment>
-					(this, R.id.fragmentContainer, MyFragment.class));
-		actionBar.addTab(pestanaTweets);
+		// Create a tab listener that is called when the user changes tabs.
+		/*
+		 * Listener que seran llamados cuando se el usuario cambie de pestañas
+		 */
+	    ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+	        public void onTabSelected(ActionBar.Tab tab,
+	                FragmentTransaction ft) { }
 
+	        public void onTabUnselected(ActionBar.Tab tab,
+	                FragmentTransaction ft) { }
+
+	        public void onTabReselected(ActionBar.Tab tab,
+	                FragmentTransaction ft) { }
+	    };
+		
+		/*
+		 * Pestañas de la barra de accion
+		 */
+		Tab tabTweets = actionBar.newTab();
+		tabTweets.setText("Tweets")
+					.setContentDescription("Tweets") 
+					.setTabListener(tabListener);
+		actionBar.addTab(tabTweets);
+
+		Tab tabEventos = actionBar.newTab();
+		tabEventos.setText("Eventos")
+					.setContentDescription("Eventos") 
+					.setTabListener(tabListener);
+		actionBar.addTab(tabEventos);
 
 	}
 
@@ -48,9 +67,11 @@ public class MainActivity extends Activity {
 	}
 	
 	/**
-	  *   clase para controlar la pestañas del la barra de accion
+	  *   Clase para controlar la pestanas del la barra de accion
+	  *   Escuchador para el cambio de pestañas
 	  */
-	  @SuppressLint("NewApi")
+	 
+	
 	public static class TabListener<T extends Fragment> 
 	    implements ActionBar.TabListener {
 	    
@@ -68,7 +89,7 @@ public class MainActivity extends Activity {
 	    }
 
 	    // Called when a new tab has been selected
-	    @SuppressLint("NewApi")
+	   
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 	      if (fragment == null) {
 	        String fragmentName = fragmentClass.getName();
