@@ -8,13 +8,15 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" 
-        android:uiOptions="splitActionBarWhenNarrow"
-        >
+        android:theme="@style/AppTheme"
+        android:uiOptions="splitActionBarWhenNarrow" >
         <activity
             android:name="com.jahama.proyectotwitter.MainActivity"
             android:label="@string/app_name" >
@@ -24,6 +26,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.jahama.proyectotwitter.PreferenciasFragment" />
+
+        <service
+            android:name="com.jahama.proyectotwitter.ActualizarTweetsService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <receiver
+            android:name="com.jahama.proyectotwitter.ActualizarAlarmReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.jahama.proyectotwitter.ACTION_ACTUALIZAR_TWEETS_ALARM" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.jahama.proyectotwitter.TweetsProvider"
+            android:authorities="com.jahama.proyectotwitter"
+            android:enabled="true"
+            android:exported="true" >
+        </provider>
     </application>
 
 </manifest>

@@ -4,6 +4,8 @@
     <string name="app_name">ProyectoTwitter</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-     <string name="hello">Vista de Tweets</string>
+    <string name="hello">Vista de Tweets</string>
+    <string name="menu_refresh">Actualizar T</string>
+    <string name="menu_preferences">Preferencias</string>
 
 </resources>

@@ -7,18 +7,27 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
+
+
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.ParseException;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -34,6 +43,34 @@ public class ActualizarTweetsService extends Service {
 	public IBinder onBind(Intent intent) {
 		// TODO: Return the communication channel to the service.
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+	
+	private void addNewTweet(Tweet tweet) {
+		Log.i(TAG, "-- A„ADIR NUEVO TWEET -- ");
+		
+	    ContentResolver cr = getContentResolver();
+
+	    // Construct a where clause to make sure we don't already have this
+	    // earthquake in the provider.
+	    String w = TweetsProvider.KEY_DATE + " = " + tweet.getFecha().getTime();
+
+	    // If the earthquake is new, insert it into the provider.
+	    Cursor query = cr.query(TweetsProvider.CONTENT_URI, null, w, null, null);
+	    
+	    if (query.getCount()==0) {
+	      ContentValues values = new ContentValues();
+
+	      values.put(TweetsProvider.KEY_DATE, tweet.getFecha().getTime());
+	      values.put(TweetsProvider.KEY_USER, tweet.getUsuario());   
+	      values.put(TweetsProvider.KEY_USER_NAME, tweet.getNombreUsuario());
+	      values.put(TweetsProvider.KEY_TEXT, tweet.getTexto());
+
+	      cr.insert(TweetsProvider.CONTENT_URI, values);
+	      Log.i(TAG, "--- INSERTED");
+	    } else {
+	    	Log.i(TAG, "--- EXISTS");
+	    }
+	    query.close();
 	}
 	
 	public void actualizarTweets(String uri) {
@@ -71,6 +108,24 @@ public class ActualizarTweetsService extends Service {
                       JSONObject tweet = infoTweets.getJSONObject(i);
                       Log.i(TAG, " Tweet : " + i + " - " +  tweet.getString("created_at") + " - " +  tweet.getString("from_user"));
                       textosTweets[i] =  tweet.getString("text");
+                      
+                      // Convertir la fecha que viene como un string a un formato de fecha
+                      SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
+                      Date fecha = null;
+                      try{
+                    	   fecha = formateador.parse("27/4/2013");
+                      }catch (Exception e) {
+						// TODO: handle exception
+					}
+                       String usuario = tweet.getString("from_user");
+                	   String nombreUsuario = tweet.getString("from_user_name");
+                	   String texto = tweet.getString("text");
+                      
+                	  
+                      Tweet nuevoTweet = new Tweet(fecha, usuario,nombreUsuario,texto);
+
+                      // Process a newly found earthquake
+                      addNewTweet(nuevoTweet);
                   }
                  
 			  } catch(JSONException e) {

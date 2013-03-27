@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="update_freq_options">
+    <item>Cada minuto</item>
+    <item>5 minutos</item>
+    <item>10 minutos</item>
+    <item>15 minutos</item>
+    <item>Cada hora</item>
+  </string-array>
+  
+  <string-array name="update_freq_values">
+    <item>1</item>
+    <item>5</item>
+    <item>10</item>
+    <item>15</item>
+    <item>60</item>
+  </string-array>
+  
+  <string-array name="pref_idioma_opcion">
+    <item>Castellano</item>
+    <item>Ingles</item>
+    <item>Euskera</item>
+    <item>Frances</item>
+    <item>Chino</item>
+  </string-array>
+  
+  <string-array name="pref_idioma_valor">
+    <item>es</item>
+    <item>en</item>
+    <item>eu</item>
+    <item>fr</item>
+    <item>ch</item>
+  </string-array>
+</resources>
