@@ -1,6 +1,7 @@
 package com.jahama.proyectotwitter;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -9,14 +10,17 @@ import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 
 
 public class MainActivity extends Activity {
 
 	protected static final String TAG = "MAIN ACTIVITY";
+	private static final int SHOW_PREFERENCES = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,29 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu); 
 		return true;
 	}
+	
+	@Override
+	  public boolean onOptionsItemSelected(MenuItem item) {
+	    super.onOptionsItemSelected(item);
+
+	    switch (item.getItemId()) {
+	    /*
+	      case (R.id.menu_refresh): {
+	        startService(new Intent(this, EarthquakeUpdateService.class));
+	        return true;
+	      }
+	      */
+	      case (R.id.menu_preferences): {
+	        Class c = Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ?    
+	          PreferencesActivity.class : PreferenciasFragment.class;
+	        Intent i = new Intent(this, c);
+	          
+	        startActivityForResult(i, SHOW_PREFERENCES);   
+	        return true;
+	      }
+	      default: return false;
+	    }
+	  }
 	
 	/**
 	  *   Clase para controlar la pestanas del la barra de accion
