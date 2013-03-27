@@ -64,12 +64,13 @@ public class MainActivity extends Activity {
 	    super.onOptionsItemSelected(item);
 
 	    switch (item.getItemId()) {
-	    /*
+	    	
 	      case (R.id.menu_refresh): {
-	        startService(new Intent(this, EarthquakeUpdateService.class));
+	    	  Log.d(TAG, " -- OPCION ACTUALIZAR DEL MENU --");
+	        startService(new Intent(this, ActualizarTweetsService.class));
 	        return true;
 	      }
-	      */
+	      
 	      case (R.id.menu_preferences): {
 	        Class c = Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ?    
 	          PreferencesActivity.class : PreferenciasFragment.class;

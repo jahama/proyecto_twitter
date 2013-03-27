@@ -33,7 +33,7 @@ public class EventosFragment extends Fragment {
     View view = inflater.inflate(R.layout.evento_fragment, container, false);
     
     fragmentText = (TextView)view.findViewById(R.id.fragmentText);
-    fragmentText.setText(fragmentTextString+ " -- " + fragmentTextString);
+    fragmentText.setText("Informacion sobre los eventos");
     
     return view;
   }
