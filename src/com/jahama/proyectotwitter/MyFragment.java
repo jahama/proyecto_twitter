@@ -27,9 +27,9 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 
 	    // Create a new Adapter and bind it to the List View
 	    adapter = new SimpleCursorAdapter(getActivity(),
-	      android.R.layout.simple_list_item_1, null,
-	      new String[] {TweetsProvider.KEY_TEXT },
-	      new int[] { android.R.id.text1 }, 0);
+	      android.R.layout.simple_list_item_2, null,
+	      new String[] {TweetsProvider.KEY_DATE, TweetsProvider.KEY_TEXT },
+	      new int[] { android.R.id.text1, android.R.id.text2 }, 0);
 	    setListAdapter(adapter);
 
 	    getLoaderManager().initLoader(0, null, this);  
@@ -61,7 +61,9 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		 String[] projection = new String[] {
 			      TweetsProvider.KEY_ID,
-			      TweetsProvider.KEY_TEXT
+			      TweetsProvider.KEY_TEXT,
+			      TweetsProvider.KEY_DATE
+			      
 			    }; 
 
 			    MainActivity tweetActivity = (MainActivity)getActivity();
