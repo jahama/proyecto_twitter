@@ -4,6 +4,7 @@ package com.jahama.proyectotwitter;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -27,7 +28,7 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 	    // Create a new Adapter and bind it to the List View
 	    adapter = new SimpleCursorAdapter(getActivity(),
 	      android.R.layout.simple_list_item_1, null,
-	      new String[] {"aa" },
+	      new String[] {TweetsProvider.KEY_TEXT },
 	      new int[] { android.R.id.text1 }, 0);
 	    setListAdapter(adapter);
 
@@ -36,7 +37,7 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 	    Thread t = new Thread(new Runnable() {
 	      public void run() {
 	        // Actualizar timeline
-	    	  //actualizarTweets() ;
+	    	  actualizarTweets() ;
 	      }
 	    });
 	    t.start();
@@ -52,26 +53,35 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 	      }
 	    });
 	    
-	    getActivity().startService(new Intent(getActivity(), 
-	                                          ActualizarTweetsService.class));
+	    getActivity().startService(new Intent(getActivity(),ActualizarTweetsService.class));
 	  }  
 	 
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		// TODO Auto-generated method stub
-		return null;
+		 String[] projection = new String[] {
+			      TweetsProvider.KEY_ID,
+			      TweetsProvider.KEY_TEXT
+			    }; 
+
+			    MainActivity tweetActivity = (MainActivity)getActivity();
+			    /*
+			    String where = TweetsProvider.KEY_MAGNITUDE + " > " + 
+			                   earthquakeActivity.minimumMagnitude;
+			   */
+			    String where = null;
+			    CursorLoader loader = new CursorLoader(getActivity(), 
+			      TweetsProvider.CONTENT_URI, projection, where, null, null);
+			    
+			    return loader;
 	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+	    adapter.swapCursor(cursor);
+	  }
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	  public void onLoaderReset(Loader<Cursor> loader) {
+	    adapter.swapCursor(null);
+	  }
+
 }
