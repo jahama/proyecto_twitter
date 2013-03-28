@@ -64,13 +64,14 @@ public class TweetsProvider extends ContentProvider {
 
 		  private static final UriMatcher uriMatcher;
 
-		  //Allocate the UriMatcher object, where a URI ending in 'earthquakes' will
-		  //correspond to a request for all earthquakes, and 'earthquakes' with a
-		  //trailing '/[rowID]' will represent a single earthquake row.
+		  
+		   //Configuracion de las URIs
+		   //Propocionando un mecanismo para identificar
+		   //todos los patrones uri entrantes. (UriMatcher)
 		  static {
 		   uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		   uriMatcher.addURI("com.jahama.proyectotwitter", "earthquakes", TWEET);
-		   uriMatcher.addURI("com.jahama.proyectotwitter", "earthquakes/#", TWEET_ID);
+		   uriMatcher.addURI("com.jahama.proyectotwitter", "tweets", TWEET);
+		   uriMatcher.addURI("com.jahama.proyectotwitter", "tweets/#", TWEET_ID);
 		   uriMatcher.addURI("com.jahama.proyectotwitter",
 		     SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH);
 		   uriMatcher.addURI("com.jahama.proyectotwitter",
@@ -84,8 +85,8 @@ public class TweetsProvider extends ContentProvider {
 		  @Override
 		  public String getType(Uri uri) {
 		    switch (uriMatcher.match(uri)) {
-		      case TWEET  : return "vnd.android.cursor.dir/vnd.paad.earthquake";
-		      case TWEET_ID: return "vnd.android.cursor.item/vnd.paad.earthquake";
+		      case TWEET  : return "vnd.android.cursor.dir/vnd.paad.tweet";
+		      case TWEET_ID: return "vnd.android.cursor.item/vnd.paad.tweet";
 		      case SEARCH  : return SearchManager.SUGGEST_MIME_TYPE;
 		      default: throw new IllegalArgumentException("Unsupported URI: " + uri);
 		    }
@@ -131,8 +132,7 @@ public class TweetsProvider extends ContentProvider {
 		                        null, null,
 		                        orderBy);
 
-		    // Register the contexts ContentResolver to be notified if
-		    // the cursor result set changes.
+		    // Register the contexts ContentResolver to be notified if the cursor result set changes.
 		    c.setNotificationUri(getContext().getContentResolver(), uri);
 
 		    // Return a cursor to the query result.
@@ -213,7 +213,7 @@ public class TweetsProvider extends ContentProvider {
 		  //Helper class for opening, creating, and managing database version control
 		  private static class TweetsDatabaseHelper extends SQLiteOpenHelper {
 		  
-		    private static final String TAG = "TweetsProvider";
+		    private static final String TAG = "TweetsDatabaseHelper";
 		  
 		    private static final String DATABASE_NAME = "tweets.db";
 		    private static final int DATABASE_VERSION = 1;
@@ -223,11 +223,12 @@ public class TweetsProvider extends ContentProvider {
 		      "create table " + TWEETS_TABLE + " ("
 		      + KEY_ID + " integer primary key autoincrement, "
 		      + KEY_DATE + " INTEGER, "
-		      + KEY_TEXT + " TEXT, "
-		      + KEY_USER + " TEXT);";
+		      + KEY_USER + " TEXT, "
+		      + KEY_USER_NAME + " TEXT, "
+		      + KEY_TEXT + " TEXT);";
 		  
 		    // The underlying database
-		    private SQLiteDatabase earthquakeDB;
+		    private SQLiteDatabase tweetsDB;
 		  
 		    public TweetsDatabaseHelper(Context context, String name,
 		                                    CursorFactory factory, int version) {
