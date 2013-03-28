@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,25 +47,25 @@ public class ActualizarTweetsService extends Service {
 	}
 	
 	private void addNewTweet(Tweet tweet) {
-		Log.i(TAG, "-- A„ADIR NUEVO TWEET -- ");
+		Log.i(TAG, "-- ANADIR NUEVO TWEET -- ");
 		
 	    ContentResolver cr = getContentResolver();
 
 	    // Construct a where clause to make sure we don't already have this
 	    // earthquake in the provider.
 	    String w = TweetsProvider.KEY_DATE + " = " + tweet.getFecha().getTime();
-
+	    Log.i(TAG, "--- w --- " + w);
 	    // If the earthquake is new, insert it into the provider.
 	    Cursor query = cr.query(TweetsProvider.CONTENT_URI, null, w, null, null);
 	    
 	    if (query.getCount()==0) {
 	      ContentValues values = new ContentValues();
-
+	      // Recogo los valores del Tweet
 	      values.put(TweetsProvider.KEY_DATE, tweet.getFecha().getTime());
 	      values.put(TweetsProvider.KEY_USER, tweet.getUsuario());   
 	      values.put(TweetsProvider.KEY_USER_NAME, tweet.getNombreUsuario());
 	      values.put(TweetsProvider.KEY_TEXT, tweet.getTexto());
-
+	      // Inserto 
 	      cr.insert(TweetsProvider.CONTENT_URI, values);
 	      Log.i(TAG, "--- INSERTED");
 	    } else {
@@ -109,20 +110,20 @@ public class ActualizarTweetsService extends Service {
                       Log.i(TAG, " Tweet : " + i + " - " +  tweet.getString("created_at") + " - " +  tweet.getString("from_user"));
                       textosTweets[i] =  tweet.getString("text");
                       
-                      // Convertir la fecha que viene como un string a un formato de fecha
-                      SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
-                      Date fecha = null;
-                      try{
-                    	   fecha = formateador.parse("27/4/2013");
-                      }catch (Exception e) {
-						// TODO: handle exception
+                      SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+                      Date qdate = new GregorianCalendar(0,0,0).getTime();
+                      try {
+                        qdate = sdf.parse(tweet.getString("created_at"));
+                      } catch (java.text.ParseException e) {
+                        Log.d(TAG, "Date parsing exception.", e);
 					}
+                      
                        String usuario = tweet.getString("from_user");
                 	   String nombreUsuario = tweet.getString("from_user_name");
                 	   String texto = tweet.getString("text");
                       
                 	  
-                      Tweet nuevoTweet = new Tweet(fecha, usuario,nombreUsuario,texto);
+                      Tweet nuevoTweet = new Tweet(qdate, usuario,nombreUsuario,texto);
 
                       // Process a newly found earthquake
                       addNewTweet(nuevoTweet);

@@ -1,7 +1,6 @@
 package com.jahama.proyectotwitter;
 
 
-
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.LoaderManager;
@@ -37,11 +36,25 @@ public class MyFragment extends ListFragment implements LoaderManager.LoaderCall
 	    Thread t = new Thread(new Runnable() {
 	      public void run() {
 	        // Actualizar timeline
+	    	  //actualizarTweets() ;
 	      }
 	    });
 	    t.start();
 	  }
 	  
+	  
+	  Handler handler = new Handler();
+	  
+	  public void actualizarTweets() {
+	    handler.post(new Runnable() {
+	      public void run() {
+	        getLoaderManager().restartLoader(0, null, MyFragment.this); 
+	      }
+	    });
+	    
+	    getActivity().startService(new Intent(getActivity(), 
+	                                          ActualizarTweetsService.class));
+	  }  
 	 
 
 	@Override
