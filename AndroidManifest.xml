@@ -18,13 +18,26 @@
         android:theme="@style/AppTheme"
         android:uiOptions="splitActionBarWhenNarrow" >
         <activity
-            android:name="com.jahama.proyectotwitter.MainActivity"
-            android:label="@string/app_name" >
+            android:name="com.jahama.proyectotwitter.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+ 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.jahama.proyectotwitter.MainActivity"
+            android:label="@string/app_name" >
+           
         </activity>
         <activity android:name="com.jahama.proyectotwitter.PreferenciasFragment" />
 
@@ -49,6 +62,8 @@
             android:enabled="true"
             android:exported="true" >
         </provider>
+
+        
     </application>
 
 </manifest>
