@@ -184,7 +184,7 @@ public class LoginActivity extends Activity {
 			Log.i(TAG, " --  onPostExecute  --" + requestToken);
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(requestToken.getAuthenticationURL())));
 		}
-	}
+	} 
 
  
     /**
