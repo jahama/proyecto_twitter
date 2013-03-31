@@ -68,7 +68,7 @@ public class EventosFragment extends ListFragment implements LoaderManager.Loade
 
 			    MainActivity tweetActivity = (MainActivity)getActivity();
 			    
-			   String where = TweetsProvider.KEY_USER + " = 'sagunt'"; 
+			   String where = TweetsProvider.KEY_USER + " = 'BalonmanoArea'"; 
 			   
 			    
 			    //String where = null;

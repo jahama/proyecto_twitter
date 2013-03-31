@@ -3,6 +3,8 @@ package com.jahama.proyectotwitter;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
@@ -12,10 +14,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,12 +56,14 @@ public class LoginActivity extends Activity {
     static final String PREF_KEY_OAUTH_SECRET = "oauth_token_secret";
     static final String PREF_KEY_TWITTER_LOGIN = "isTwitterLogedIn";
  
-    static final String TWITTER_CALLBACK_URL = "";
+    static final String TWITTER_CALLBACK_URL = "oauth://t4jsample";
  
     // Twitter oauth urls
     static final String URL_TWITTER_AUTH = "auth_url";
     static final String URL_TWITTER_OAUTH_VERIFIER = "oauth_verifier";
     static final String URL_TWITTER_OAUTH_TOKEN = "oauth_token";
+
+	private static final String TAG = "LoginActivity";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
@@ -93,13 +99,14 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Log.i(TAG, " -- INICIO : onCreate -- ");
 		setContentView(R.layout.activity_login);
 
 		// 
 		mSharedPreferences = getSharedPreferences(PREF_KEY_TWITTER_LOGIN, MODE_PRIVATE);
 		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.email);
+			mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
+			mEmailView = (EditText) findViewById(R.id.email);
 		mEmailView.setText(mEmail);
 
 		mPasswordView = (EditText) findViewById(R.id.password);
@@ -126,11 +133,68 @@ public class LoginActivity extends Activity {
 						//attemptLogin();
 						// Call login twitter function
 			            new LoginToTwitter().execute();
-						
+			           
 					}
 				});
-	}
+		
+		/** This if conditions is tested once is
+		 * redirected from twitter page. Parse the uri to get oAuth
+		 * Verifier
+		 * */ 
+		
+		if (!isTwitterLoggedInAlready()) {  
+			Log.i(TAG, " -- usuario no logueado -- " + getIntent());
+			Uri uri = this.getIntent().getData();
+			Log.i(TAG, " -- uri -- " + uri);
+			if (uri != null && uri.toString().startsWith(TWITTER_CALLBACK_URL)) {
+				// oAuth verifier
+				Log.i(TAG, " -- oAuth verifier -- ");
+				String verifier = uri
+						.getQueryParameter(URL_TWITTER_OAUTH_VERIFIER);
+ 
+				try {
+					// Get the access token
+					Log.i(TAG, " -- OBTENER  access token -- ");
+					AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
 
+					// Shared Preferences
+					Editor e = mSharedPreferences.edit();
+					
+					Log.i(TAG, " -- actualizar  shared Prefernces -- ");
+					// After getting access token, access token secret
+					// store them in application preferences
+					e.putString(PREF_KEY_OAUTH_TOKEN, accessToken.getToken());
+					e.putString(PREF_KEY_OAUTH_SECRET,
+							accessToken.getTokenSecret());
+					// Store login status - true
+					e.putBoolean(PREF_KEY_TWITTER_LOGIN, true);
+					e.commit(); // save changes
+
+					Log.e("Twitter OAuth Token", "> " + accessToken.getToken());
+
+				
+					
+					// Getting user details from twitter
+					// For now i am getting his name only
+					long userID = accessToken.getUserId();
+					User user = twitter.showUser(userID);
+					String username = user.getName();
+					
+					 
+				} catch (Exception e) {
+					// Check log for login errors
+					Log.e("Twitter Login Error", "> " + e.getMessage());
+				} 
+			}
+		} // if
+
+		Log.i(TAG, " -- fIN : onCreate -- ");
+	} // En OnCreate
+
+	public void onResume(){
+		super.onResume();
+		Log.i(TAG, " -- onResume -- ");
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -165,7 +229,8 @@ public class LoginActivity extends Activity {
 				twitter = factory.getInstance();
 
 				try {
-					requestToken = twitter.getOAuthRequestToken(TWITTER_CALLBACK_URL);
+					//Obtengo el token de twitter
+					requestToken = twitter.getOAuthRequestToken();
 					//getApplicationContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(requestToken.getAuthenticationURL())));
 				} catch (TwitterException e) {
 					e.printStackTrace();
@@ -181,7 +246,8 @@ public class LoginActivity extends Activity {
 		}
 	
 		protected void onPostExecute(RequestToken requestToken) {
-			Log.i(TAG, " --  onPostExecute  --" + requestToken);
+			Log.i(TAG, " --  onPostExecute  --" + requestToken + " -- esta logeado ? -- " + isTwitterLoggedInAlready());
+			//  requestToken.getAuthenticationURL()--> authentication URL since Twitter4J 2.0.10
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(requestToken.getAuthenticationURL())));
 		}
 	} 
@@ -193,6 +259,7 @@ public class LoginActivity extends Activity {
      * */
     private boolean isTwitterLoggedInAlready() {
         // return twitter login status from Shared Preferences
+    	Log.i(TAG, " --  isTwitterLoggedInAlready  funcion--" + requestToken);
         return mSharedPreferences.getBoolean(PREF_KEY_TWITTER_LOGIN, false);
     }
 
